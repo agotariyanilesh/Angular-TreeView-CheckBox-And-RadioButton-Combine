@@ -24,7 +24,7 @@ import { TreeItemLookup } from '@progress/kendo-angular-treeview';
             'k-radio': dataItem.IsMutual,
             'k-checkbox': !dataItem.IsMutual
           }"
-          *ngIf="show(index)"
+          *ngIf="show(index, node)"
           type="checkbox"
           (change)="onChange($event, index, node)"
           [checked]="isChecked(index)"
@@ -85,11 +85,13 @@ export class AppComponent {
 
   public checkedItems: Array<String> = [];
 
-  public show(index: String): boolean {
+  public show(index: String, node: any): boolean {
     if (index.indexOf('_') >= 0) {
-      return true;
+      if (node.IsMutual && node.IsGroup) return false;
+      else return true;
     } else {
-      return false;
+      if (node.IsMutual) return false;
+      else return true;
     }
   }
 
