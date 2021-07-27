@@ -5,6 +5,10 @@ import { TreeItemLookup } from '@progress/kendo-angular-treeview';
 @Component({
   selector: 'my-app',
   template: `
+    <div style="margin: 10px 0">
+      <div class="example-config">Checked items: {{ checkedItems }}</div>
+    </div>
+
     <kendo-treeview
       id="kendoTree"
       [nodes]="data"
@@ -32,9 +36,6 @@ import { TreeItemLookup } from '@progress/kendo-angular-treeview';
         {{ dataItem.text }}
       </ng-template>
     </kendo-treeview>
-    <div style="margin: 10px 0">
-      <div class="example-config">Checked items: {{ checkedItems }}</div>
-    </div>
   `
 })
 export class AppComponent {
@@ -52,7 +53,16 @@ export class AppComponent {
           IsGroup: true,
           IsMutual: true,
           items: [
-            { text: 'Tag 1', IsMutual: true, IsGroup: false },
+            {
+              text: 'Tag 1',
+              IsMutual: true,
+              IsGroup: true,
+              items: [
+                { text: 'Tag 1-1', IsMutual: true, IsGroup: false },
+                { text: 'Tag 1-2', IsMutual: true, IsGroup: false },
+                { text: 'Tag 1-3', IsMutual: true, IsGroup: false }
+              ]
+            },
             { text: 'Tag 2', IsMutual: true, IsGroup: false },
             { text: 'Tag 3', IsMutual: true, IsGroup: false }
           ]
@@ -99,26 +109,22 @@ export class AppComponent {
     //patch
     if (node.IsMutual) {
       //0_1
-      //console.log(index);
+      console.log(index);
       var parentID = '0';
-      for (var i = index.length - 1; i >= 0; i--) {
-        console.log('Char' + index[i]);
-        if (index[i] === '_') {
-          parentID = index.substr(0, i);
-          break;
-        }
-      }
 
+      if (index.indexOf('_') > 0) {
+        parentID = index.substr(0, index.length - 2);
+      }
       console.log(parentID);
 
       var item = this.checkedItems.filter(
-        i => i.split('_')[0] == index.split('_')[0]
+        //i => i.split('_')[0] == index.split('_')[0]
+        i => i.substr(0, i.length - 2) === parentID
       );
 
       item.forEach(x => {
         this.checkedItems.splice(this.checkedItems.indexOf(x), 1);
       });
-      console.log(item);
     }
     const isItemChecked = this.checkedItems.indexOf(index) >= 0;
     if ((event.target as HTMLInputElement).checked && !isItemChecked) {
